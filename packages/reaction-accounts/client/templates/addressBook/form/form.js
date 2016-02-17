@@ -3,24 +3,13 @@ Template.addressBookForm.helpers({
   /*
    * TODO: update for i18n
    */
-  countryOptions: function() {
-    var country, locale, options, ref, shop;
-    options = [];
-    shop = ReactionCore.Collections.Shops.findOne();
-    ref = shop != null ? shop.locales.countries : void 0;
-    for (country in ref) {
-      locale = ref[country];
-      options.push({
-        'label': locale.name,
-        'value': country
-      });
-    }
-    return options;
+  countryOptions: function () {
+    return ReactionCore.Collections.Countries.find().fetch();
   },
   statesForCountry: function() {
     var locale, options, ref, selectedCountry, shop, state;
     shop = ReactionCore.Collections.Shops.findOne();
-    selectedCountry = Session.get('addressBookCountry' || AutoForm.getFieldValue('country'));
+    selectedCountry = Session.get('addressBookCountry') || AutoForm.getFieldValue('country');
     if (!selectedCountry) {
       return false;
     }
@@ -47,6 +36,20 @@ Template.addressBookForm.helpers({
   },
   isShippingDefault: function () {
     return typeof this.address === "object" ? this.address.isShippingDefault : true;
+  },
+  hasAddressBookEntries: function () {
+    let account = ReactionCore.Collections.Accounts.findOne({
+      userId: Meteor.userId()
+    });
+    if (account) {
+      if (account.profile) {
+        if (account.profile.addressBook) {
+          return account.profile.addressBook.length > 0;
+        }
+      }
+    }
+
+    return false;
   }
 });
 

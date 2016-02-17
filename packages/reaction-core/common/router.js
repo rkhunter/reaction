@@ -156,7 +156,10 @@ Router.map(function () {
     name: "index",
     template: "products",
     subscriptions: function () {
-      this.subscribe("Products", Session.get("productScrollLimit"));
+      Session.set("productFilters", {});
+      Deps.autorun(function () {
+        Meteor.subscribe("Products", Session.get("productScrollLimit"), Session.get("productFilters"));
+      });
     }
   });
 
@@ -230,22 +233,14 @@ Router.map(function () {
     controller: ShopController,
     path: "product/tag/:_id",
     template: "products",
-    waitOn: function () {
-      return this.subscribe("Products", Session.get("productScrollLimit"));
-    },
     subscriptions: function () {
-      return this.subscribe("Tags");
-    },
-    data: function () {
-      let id;
-      if (this.ready()) {
-        id = this.params._id;
-        return {
-          tag: ReactionCore.Collections.Tags.findOne({
-            slug: id
-          }) || ReactionCore.Collections.Tags.findOne(id)
-        };
-      }
+      const id = this.params._id;
+      const tag = ReactionCore.Collections.Tags.findOne(id) || ReactionCore.Collections.Tags.findOne({slug: id});
+      Session.set("productFilters", {"tag": tag._id});
+      Deps.autorun(function () {
+        Meteor.subscribe("Products", Session.get("productScrollLimit"), Session.get("productFilters"));
+      });
+      Meteor.subscribe("Tags");
     }
   });
 
@@ -258,7 +253,7 @@ Router.map(function () {
     },
     onBeforeAction: function () {
       let variant;
-      variant = this.params.variant || this.params.query.variant;
+      variant = currentProduct.get('variantId') || this.params.variant || this.params.query.variant;
       ReactionCore.setProduct(this.params._id, variant);
       return this.next();
     },

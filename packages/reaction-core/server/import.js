@@ -193,6 +193,10 @@ ReactionImport.context = function (collection) {
 ReactionImport.buffer = function (collection) {
   check(collection, Mongo.Collection);
 
+  if (!MongoInternals.NpmModule.Collection.prototype.initializeUnorderedBulkOp) {
+    throw Error("Couldn't detect the MongoDB bulk API, are you using MongoDB 2.6 or above?");
+  }
+
   // Construct a buffer identifier.
   let name = this._name(collection);
 

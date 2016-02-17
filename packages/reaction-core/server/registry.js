@@ -38,18 +38,24 @@ ReactionRegistry.loadSettings = function (json) {
   let services;
   let settings;
   let validatedJson = EJSON.parse(json);
+
   // validate json and error out if not an array
   if (!_.isArray(validatedJson[0])) {
     ReactionCore.Log.warn(
       "Load Settings is not an array. Failed to load settings.");
     return;
   }
+
   // loop settings and upsert packages.
   for (let pkg of validatedJson) {
     for (let item of pkg) {
       exists = ReactionCore.Collections.Packages.findOne({
         name: item.name
       });
+      //
+      // TODO migrate functionality to ReactionImport
+      // ReactionImport.package(item, shopId);
+      //
       // insert into the Packages collection
       if (exists) {
         result = ReactionCore.Collections.Packages.upsert({
@@ -99,7 +105,7 @@ ReactionRegistry.loadSettings = function (json) {
  * @returns {String} return userId
  */
 ReactionRegistry.createDefaultAdminUser = function () {
-  const options = {};
+  let options = {};
   const domain = getDomain();
   const defaultAdminRoles = ["owner", "admin", "guest"];
   const shopId = ReactionCore.getShopId();
@@ -125,6 +131,10 @@ ReactionRegistry.createDefaultAdminUser = function () {
     }
   }
 
+  // run hooks on options object before creating user
+  // (the options object must be returned from all callbacks)
+  options = ReactionCore.Hooks.Events.run("beforeCreateDefaultAdminUser", options);
+
   // set the default shop email to the default admin email
   ReactionCore.Collections.Shops.update(shopId, {
     $addToSet: {
@@ -135,6 +145,7 @@ ReactionRegistry.createDefaultAdminUser = function () {
       domains: Meteor.settings.ROOT_URL
     }
   });
+
   // create the new admin user
   // we're checking again to see if this user was created but not specifically for this shop.
   if (Meteor.users.find({
@@ -168,21 +179,7 @@ ReactionRegistry.createDefaultAdminUser = function () {
         "Unable to send admin account verification email.", error);
     }
   }
-  // launchdock is the Reaction PaaS solution
-  // if we have launchdock credentials, we'll configure them
-  if (process.env.LAUNCHDOCK_USERID) {
-    Meteor.users.update({
-      _id: accountId
-    }, {
-      $set: {
-        "services.launchdock.userId": process.env.LAUNCHDOCK_USERID,
-        "services.launchdock.username": process.env.LAUNCHDOCK_USERNAME,
-        "services.launchdock.auth": process.env.LAUNCHDOCK_AUTH,
-        "services.launchdock.url": process.env.LAUNCHDOCK_URL,
-        "services.launchdock.stackId": process.env.LAUNCHDOCK_STACK_ID
-      }
-    });
-  }
+
   // populate roles with all the packages and their permissions
   // this way the default user has all permissions
   const packages = ReactionCore.Collections.Packages.find().fetch();
@@ -210,6 +207,10 @@ ReactionRegistry.createDefaultAdminUser = function () {
       \n  PASSWORD: ${options.password}
       \n ********************************* \n\n`
   );
+
+  // run hooks on new user object
+  const user = Meteor.users.findOne(accountId);
+  ReactionCore.Hooks.Events.run("afterCreateDefaultAdminUser", user);
 };
 
 /**
@@ -229,13 +230,10 @@ ReactionRegistry.loadPackages = function () {
   if (pkgCount !== shopCount * regCount) {
     // for each shop, we're loading packages a unique registry
     _.each(ReactionRegistry.Packages, function (config, pkgName) {
-      return ReactionCore.Collections.Shops.find().forEach(function (
-        shop) {
+      return ReactionCore.Collections.Shops.find().forEach(function (shop) {
         let shopId = shop._id;
-        ReactionCore.Log.info("Initializing " + shop.name + " " +
-          pkgName);
-        // existing registry will be upserted with changes
         if (!shopId) return [];
+        // existing registry will be upserted with changes
         ReactionImport.package({
           name: pkgName,
           icon: config.icon,
@@ -244,6 +242,7 @@ ReactionRegistry.loadPackages = function () {
           registry: config.registry,
           layout: config.layout
         }, shopId);
+        ReactionCore.Log.info(`Initializing ${shop.name} ${pkgName}`);
       });
     });
     ReactionImport.flush();
@@ -294,7 +293,7 @@ ReactionRegistry.setDomain = function () {
 /**
  *  ReactionRegistry.setShopName
  *  @private ReactionRegistry.setShopName
- *  @params {Object} shop - shop
+ *  @param {Object} shop - shop
  *  @summary when new shop is created, set shop name if REACTION_SHOP_NAME env var exists
  *  @returns {undefined} undefined
  */
@@ -324,7 +323,7 @@ ReactionCore.Collections.Shops.find().observe({
     ReactionRegistry.setDomain();
     ReactionRegistry.createDefaultAdminUser();
   },
-  removed(doc) {
+  removed() {
     // TODO SHOP REMOVAL CLEANUP FOR #357
   }
 });

@@ -6,9 +6,55 @@
       "languages": {
         "select": "Select Language"
       },
+      "admin": {
+        "shortcut": {
+          "dashboardLabel": "Dashboard",
+          "ordersLabel": "Orders",
+          "addProductLabel": "Add Product",
+          "accountsLabel": "Accounts"
+        },
+        "dashboard": {
+          "coreLabel": "Core",
+          "coreDescription": "Reaction Commerce Core",
+          "ordersLabel": "Orders",
+          "ordersDescription": "Fulfill your orders",
+          "importLabel": "Import",
+          "importDescription": "Support for imports and migrations",
+          "accountsLabel": "Accounts",
+          "accountsDescription": "Manage how members sign into your shop",
+          "socialLabel": "Social",
+          "socialDescription": "Social Sharing for Reaction Commerce",
+          "basicShippingLabel": "Basic Shipping",
+          "basicShippingDescription": "Use flat rates for shipping calculations",
+          "inventoryLabel": "Inventory",
+          "inventoryDescription": "Basic Inventory Management",
+          "analyticsLabel": "Analytics",
+          "analyticsDescription": "Event tracking and analytics with Reaction Commerce",
+          "paypalLabel": "PayPal",
+          "paypalDescription": "PayPal Payment for Reaction Commerce",
+          "genericPaymentLabel": "Generic Payment",
+          "genericPaymentDescription": "Generic Payment Method"
+        },
+        "settings": {
+          "accountSettingsLabel": "Account Settings",
+          "shopSettingsLabel": "Shop Settings",
+          "socialSettingsLabel": "Social Settings",
+          "shippingSettingsLabel": "Shipping Settings",
+          "inventorySettingsLabel": "Inventory Settings",
+          "analyticsSettingsLabel": "Analytics Settings",
+          "paypalSettingsLabel": "PayPal Settings",
+          "genericPaymentSettingsLabel": "Generic Payment Settings"
+        }
+      },
+      "accounts": {
+        "addMember": "Add Member",
+        "shopMembers": "Shop Members",
+        "guests": "Guests"
+      },
       "app": {
         "save": "Save",
         "saveAndContinue": "Save and continue",
+        "saveChanges": "Save Changes",
         "cancel": "Cancel",
         "submit": "Submit",
         "delete": "Delete",
@@ -20,11 +66,22 @@
         "warning": "Oops!",
         "unauthorizedMessage": "You don't have permission to view this content.",
         "monthOptions": "Choose month",
-        "yearOptions": "Chose year",
+        "yearOptions": "Choose year",
         "timezoneOptions": "Choose timezone",
         "shopSettings": "Shop Settings",
         "dashboard": "Dashboard",
-        "print": "Print"
+        "print": "Print",
+        "notFoundTitle": "Oops!",
+        "notFoundError": "Page not found.",
+        "loadMoreProducts": "Load more products"
+      },
+      "shopSettings": {
+        "general": "General",
+        "address": "Address",
+        "mail": "Mail",
+        "localization": "Localization",
+        "options": "Options",
+        "paymentMethods": "Payment Methods"
       },
       "header": {
         "tagsAdd": "Add tag",
@@ -62,10 +119,14 @@
         "limitedSupply": "Limited Supply",
         "publishProductVisible": "is now visible",
         "publishProductHidden": "is now hidden",
+        "clonedAlert": "Cloned",
+        "deletedAlert": "Deleted",
         "startTracking": "Start Tracking",
         "addBarcode": "Add Barcode",
         "quantity": "Quantity",
-        "quantityGreaterThanZero": "Error: Quantity must be greater than zero"
+        "quantityGreaterThanZero": "Error: Quantity must be greater than zero",
+        "notFoundTitle": "Oops!",
+        "notFoundError": "This is not the product you were looking for."
       },
       "productDetailEdit": {
         "title": "Product title",
@@ -127,6 +188,7 @@
         "filter": {
           "new": "New",
           "captured": "Payment Captured",
+          "processing": "Processing",
           "shipped": "Shipped",
           "completed": "Completed",
           "canceled": "Canceled",
@@ -160,7 +222,7 @@
       "checkoutLogin": {
         "welcome": "Welcome, it's so good to see you.",
         "loginCompleted": "Account completed",
-        "createOrLogin": "Create an acccount, or sign in",
+        "createOrLogin": "Create an account, or sign in",
         "guestOrLogin": "Sign in, or checkout as a guest",
         "continueAsGuest": "Continue as Guest",
         "guestMessage": "You can checkout without creating an account. You'll have a chance to create an account later."
@@ -202,7 +264,9 @@
       "checkoutPayment": {
         "addPaymentToCompleteOrder": "Add payment to complete order",
         "processingError": "There was a problem with your payment.",
-        "completeYourOrder": "Complete your order"
+        "completeYourOrder": "Complete your order",
+        "noPaymentMethods": "No payment methods are configured.",
+        "configureNow": "Configure now."
       },
       "checkoutReview": {
         "review": "Review"
